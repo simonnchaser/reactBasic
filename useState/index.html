@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    function MinutesToHours() {
+      const [amount, setAmount] = React.useState(0);
+      const [flipped, setFlipped] = React.useState(false);
+
+      const onChange = (event) => {
+        setAmount(event.target.value);
+      };
+
+      const reset = () => setAmount(0);
+      const onFlip = () => {
+        reset();
+        setFlipped((current) => !current);
+      };
+
+      return (
+        <div>
+          <div>
+            <label htmlFor="minutes">Minutes</label>
+            <input
+              value={flipped ? amount * 60 : amount}
+              id="minutes"
+              type="number"
+              placeholder="Minutes"
+              onChange={onChange}
+              disabled={flipped}
+            />
+            <h4 style={{ visibility: flipped ? "hidden" : "visible" }}>
+              {amount} minutes → {amount / 60} hours
+            </h4>
+          </div>
+
+          <div>
+            <label htmlFor="hours">Hours</label>
+            <input
+              value={flipped ? amount : Math.round(amount / 60)}
+              id="hours"
+              type="number"
+              placeholder="Hours"
+              onChange={onChange}
+              disabled={!flipped}
+            />
+            <h4 style={{ visibility: flipped ? "visible" : "hidden" }}>
+              {amount} hours → {amount * 60} minutes
+            </h4>
+          </div>
+
+          <button onClick={reset}>Reset</button>
+          <button onClick={onFlip}>{flipped ? "Turn back" : "Flip"}</button>
+        </div>
+      );
+    }
+    function WonToDollar() {
+      const [money, setMoney] = React.useState("");
+      const [flipped, setFlipped] = React.useState(false);
+
+      const formatNumber = (num) => {
+        if (num === "") return "";
+        return Number(num).toLocaleString();
+      };
+
+      const onChange = (event) => {
+        const rawValue = event.target.value.replace(/,/g, ""); // 콤마 제거
+        if (!isNaN(rawValue) && rawValue !== "") {
+          setMoney(rawValue);
+        }
+      };
+
+      const reset = () => setMoney("");
+      const onFlip = () => {
+        reset();
+        setFlipped((current) => !current);
+      };
+
+      return (
+        <div>
+          <div>
+            <input
+              id="won"
+              value={
+                flipped
+                  ? formatNumber(Math.round(money / 0.0007))
+                  : formatNumber(money)
+              }
+              onChange={onChange}
+              type="text"
+              disabled={flipped}
+            />
+            <label htmlFor="won">Wons</label>
+            <h4 style={{ visibility: flipped ? "hidden" : "visible" }}>
+              {formatNumber(money)} wons → {(money * 0.0007).toFixed(2)} dollars
+            </h4>
+          </div>
+
+          <div>
+            <input
+              id="dollar"
+              value={
+                flipped
+                  ? formatNumber(money)
+                  : formatNumber((money * 0.0007).toFixed(2))
+              }
+              onChange={onChange}
+              type="text"
+              disabled={!flipped}
+            />
+            <label htmlFor="dollar">Dollars</label>
+            <h4 style={{ visibility: flipped ? "visible" : "hidden" }}>
+              {formatNumber(money)} dollars →{" "}
+              {formatNumber(Math.round(money / 0.0007))} wons
+            </h4>
+          </div>
+
+          <button onClick={reset}>Reset</button>
+          <button onClick={onFlip}>
+            {flipped ? "Convert to Won" : "Convert to Dollar"}
+          </button>
+        </div>
+      );
+    }
+    function App() {
+      const [index, setIndex] = React.useState("0");
+
+      const onSelect = (event) => {
+        setIndex(event.target.value);
+      };
+
+      return (
+        <div>
+          <h1>Super Converter</h1>
+          <select value={index} onChange={onSelect}>
+            <option value="0">Minutes & Hours</option>
+            <option value="1">Won & Dollar</option>
+          </select>
+
+          {index === "0" ? <MinutesToHours /> : null}
+          {index === "1" ? <WonToDollar /> : null}
+        </div>
+      );
+    }
+    ReactDOM.render(<App />, root);
+  </script>
+</html>
